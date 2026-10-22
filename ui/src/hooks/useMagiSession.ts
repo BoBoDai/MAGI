@@ -129,6 +129,25 @@ function nodesFromVotes(batch: VoteBatch): {
   return { nodes, errors };
 }
 
+function nodesFromDebate(batch: DebateBatch): {
+  nodes: Record<PersonaId, NodeStatus>;
+  errors: Record<PersonaId, string | null>;
+} {
+  const nodes = emptyNodes();
+  const errors = emptyErrors();
+
+  for (const outcome of batch.outcomes) {
+    if (outcome.status === 'ok') {
+      nodes[outcome.reply.persona] = 'done';
+    } else {
+      nodes[outcome.persona] = 'failed';
+      errors[outcome.persona] = outcome.message;
+    }
+  }
+
+  return { nodes, errors };
+}
+
 function reducer(state: MagiState, action: Action): MagiState {
   switch (action.type) {
     case 'START':
@@ -205,15 +224,19 @@ function reducer(state: MagiState, action: Action): MagiState {
         failedStage: null,
       };
 
-    case 'DEBATE_DONE':
+    case 'DEBATE_DONE': {
+      const { nodes, errors } = nodesFromDebate(action.batch);
       return {
         ...state,
         phase: 'debate_ready',
         debate: action.batch,
         streaming: emptyStrings(),
+        nodes,
+        nodeErrors: errors,
         stageError: null,
         failedStage: null,
       };
+    }
 
     case 'VOTE_START':
       return {

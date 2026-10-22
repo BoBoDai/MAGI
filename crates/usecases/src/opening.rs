@@ -3,7 +3,7 @@
 use magi_adapters::MagiProvider;
 use magi_core::{
     MagiStreamEvent, OpeningBatch, OpeningCall, OpeningOutcome, OpeningRequest, PersonaId, Result,
-    Stage,
+    Stage, decide_openings,
 };
 
 use super::App;
@@ -78,9 +78,13 @@ impl<L: MagiProvider> App<L> {
 
         emit(MagiStreamEvent::StageCompleted { run_id, stage });
 
+        let outcomes = vec![melchior, balthasar, casper];
+        let decision = decide_openings(&outcomes);
+
         Ok(OpeningBatch {
-            outcomes: vec![melchior, balthasar, casper],
+            outcomes,
             prompt_version: OpeningBatch::PROMPT_VERSION.into(),
+            decision,
         })
     }
 }

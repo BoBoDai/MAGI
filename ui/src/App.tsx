@@ -8,14 +8,16 @@ import {
   setDemoMode,
 } from './api/ipc';
 import AppHeader from './components/AppHeader';
+import ExtendedAnalysis from './components/ExtendedAnalysis';
 import MagiConsole from './components/MagiConsole';
+import MagiDetailModal from './components/MagiDetailModal';
 import QuestionComposer from './components/QuestionComposer';
 import SessionHistory from './components/SessionHistory';
 import SettingsPanel from './components/SettingsPanel';
 import { useMagiSession } from './hooks/useMagiSession';
 import { useSessionHistory } from './hooks/useSessionHistory';
 import { ipcErrorMessage } from './lib/ipcError';
-import type { LlmSettingsView, RuntimeFlags } from './types';
+import type { LlmSettingsView, PersonaId, RuntimeFlags } from './types';
 
 export default function App() {
   const inTauri = isTauri();
@@ -24,6 +26,7 @@ export default function App() {
   const [demoEnabled, setDemoEnabled] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [selectedPersona, setSelectedPersona] = useState<PersonaId | null>(null);
   const [question, setQuestion] = useState('');
   const [context, setContext] = useState('');
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -58,11 +61,13 @@ export default function App() {
     state.phase === 'voting';
 
   const handleStart = useCallback(() => {
+    setSelectedPersona(null);
     void actions.start(question, context);
   }, [actions, question, context]);
 
   const handleNewSession = useCallback(() => {
     actions.reset();
+    setSelectedPersona(null);
     setQuestion('');
     setContext('');
   }, [actions]);
@@ -72,6 +77,7 @@ export default function App() {
       try {
         const record = await getSession(id);
         actions.load(record);
+        setSelectedPersona(null);
         setQuestion(record.question);
         setContext(record.context);
         setHistoryOpen(false);
@@ -117,9 +123,7 @@ export default function App() {
   }
 
   return (
-    <div className="relative flex h-full flex-col overflow-hidden bg-term-bg font-mono text-term-fg">
-      <div className="magi-scanlines pointer-events-none fixed inset-0 z-30" />
-
+    <div className="relative flex h-full flex-col overflow-hidden font-mono text-term-fg">
       <div className="relative z-10 flex h-full min-h-0 flex-col">
         <AppHeader
           settings={settings}
@@ -132,16 +136,24 @@ export default function App() {
         />
 
         {demoEnabled ? (
-          <div className="border-b border-term-amber bg-term-amber/15 px-4 py-1 text-center text-[9.5px] tracking-[0.24em] text-term-amber">
+          <div className="border-b-2 border-term-amber bg-term-amber px-4 py-0.5 text-center text-[9px] tracking-[0.24em] text-black">
             MOCK MODE // NOT REAL MODEL OUTPUT
           </div>
         ) : null}
 
         {loadError || demoError ? (
-          <div className="border-b border-term-red px-4 py-1 text-[10px] text-term-red">
+          <div className="border-b-2 border-term-red bg-black px-4 py-1 text-[10px] text-term-red">
             {loadError ?? demoError}
           </div>
         ) : null}
+
+        <MagiConsole
+          state={state}
+          actions={actions}
+          demoEnabled={demoEnabled}
+          onNewSession={handleNewSession}
+          onSelectUnit={setSelectedPersona}
+        />
 
         <QuestionComposer
           question={question}
@@ -153,12 +165,14 @@ export default function App() {
           onStart={handleStart}
         />
 
-        <MagiConsole
-          state={state}
-          actions={actions}
-          onNewSession={handleNewSession}
-        />
+        <ExtendedAnalysis state={state} />
       </div>
+
+      <MagiDetailModal
+        persona={selectedPersona}
+        state={state}
+        onClose={() => setSelectedPersona(null)}
+      />
 
       <SettingsPanel
         open={settingsOpen}

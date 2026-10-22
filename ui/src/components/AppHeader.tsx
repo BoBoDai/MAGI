@@ -11,7 +11,7 @@ interface AppHeaderProps {
 }
 
 const buttonClass =
-  'border border-term-grid px-2 py-1 text-[9.5px] tracking-[0.14em] text-term-dim hover:border-term-amber hover:text-term-amber disabled:opacity-40';
+  'border border-term-amber/60 px-2 py-1 text-[9.5px] tracking-[0.14em] text-term-dim hover:bg-term-amber hover:text-black disabled:opacity-40';
 
 export default function AppHeader({
   settings,
@@ -29,7 +29,7 @@ export default function AppHeader({
   const online = demoEnabled || Boolean(active?.has_api_key);
 
   return (
-    <header className="relative z-10 flex flex-wrap items-center gap-3 border-b border-term-grid bg-term-panel px-4 py-2">
+    <header className="relative z-10 flex flex-wrap items-center gap-3 border-b-2 border-term-amber bg-black px-4 py-2">
       <div className="flex items-center gap-2">
         <span
           className={`h-2 w-2 ${
@@ -47,7 +47,7 @@ export default function AppHeader({
       </div>
 
       <div className="ml-auto flex flex-wrap items-center gap-2 text-[9.5px] tracking-[0.14em] text-term-dim">
-        <span className="border border-term-grid px-2 py-1">
+        <span className="border border-term-amber/50 px-2 py-1">
           {active
             ? `${active.provider.toUpperCase()} // ${active.model}`
             : 'NO PROVIDER'}

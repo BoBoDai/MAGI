@@ -32,6 +32,24 @@ All three calls use the same provider/model in v1; the persona lens and temperat
 
 - A failed call becomes an explicit `Failed` slot. It is never dropped or replaced with a fabricated opinion.
 
+#### Decision status (provisional)
+
+`OpeningBatch.decision` is derived by `magi-core::decide_openings` using the classic MAGI precedence:
+
+| Opening statements | Decision |
+|---|---|
+| any failure, or not exactly three slots | `誤差` (Error) |
+| all three abstain | `情報` (Info) |
+| any reject | `拒絶` (No) |
+| any abstain, no reject | `状態` (Conditional) |
+| all three approve | `合意` (Yes) |
+
+Precedence: **error > info > no > conditional > yes**.
+
+The geometric console displays this provisional decision after OPENING. Once final ballots exist, the console shows the final verdict instead (`FINAL // ...`); the provisional decision is no longer authoritative.
+
+This is an adaptation of the classic MAGI decision system. The reference implementation also classifies whether the question is binary; v1 does not make that extra call, so all-abstain is used as the `info` case.
+
 ### 2. DEBATE (optional)
 
 - Enabled only when **all three** openings succeeded.

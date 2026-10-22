@@ -8,12 +8,28 @@ Three independent brains — **MELCHIOR-1** (scientist), **BALTHASAR-2** (mother
 
 ## Protocol
 
-1. **OPENING** — three concurrent, independent structured opinions. No brain sees another's opening.
+1. **OPENING** — three concurrent, independent structured opinions. No brain sees another's opening. Rust also derives a provisional decision status (`合意 / 拒絶 / 状態 / 情報 / 誤差`) from these statements.
 2. **DEBATE (optional, one round)** — each brain sees the other openings and the question, but not the other debate replies.
-3. **VOTE** — three concurrent, sealed final ballots. A brain sees the openings and the debate, never another final ballot.
+3. **VOTE** — three concurrent, sealed final ballots. A brain sees the openings and the debate, never another final ballot. The final verdict overrides the provisional decision in the console.
 4. **VERDICT** — computed in Rust from the final ballots, with dissent and changed-stance markers.
 
 See [`docs/protocol.md`](docs/protocol.md) for the invariants and the verdict table.
+
+## Interface
+
+![MAGI decision console](docs/console.png)
+
+The primary screen is a geometric MAGI decision console inspired by the classic three-unit layout:
+
+- **Top** — MELCHIOR, BALTHASAR, and CASPER are drawn as angular units connected to the central MAGI panel. Their fill color reflects the current stance. Clicking a unit opens its full opening statement, debate reply, and final ballot.
+- **Response tile** — `合 意` (yes), `拒 絶` (no), `状 態` (conditional), `情 報` (info), or `誤 差` (error). While only the openings exist the tile shows a **provisional** decision; after the sealed final vote it shows the **final** verdict.
+- **Extended Analysis** — a bottom drawer containing the full protocol page: the three detailed columns, the debate transcript, the final ballots, and the verdict breakdown.
+
+![Extended analysis drawer](docs/extended.png)
+
+The decision status is computed in Rust from the opening statements with the precedence `error > info > no > conditional > yes`. Three abstentions are treated as `info`; the classic question-classification call is not implemented in v1.
+
+The geometric console layout is inspired by [Tomasz Rewak's MAGI](https://github.com/TomaszRewak/MAGI) (MIT). The implementation, styling, and protocol integration are original.
 
 ## Stack
 

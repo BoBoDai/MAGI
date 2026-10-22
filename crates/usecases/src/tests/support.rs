@@ -6,7 +6,7 @@ use magi_adapters::MagiProvider;
 use magi_core::{
     DebateBatch, DebateCall, DebateOutcome, DebateReply, DebateRequest, Error, Opening,
     OpeningBatch, OpeningCall, OpeningOutcome, OpeningRequest, PersonaId, Result, Stance, VoteCall,
-    VoteCast, VoteRequest,
+    VoteCast, VoteRequest, decide_openings,
 };
 use tokio::sync::Barrier;
 
@@ -179,23 +179,27 @@ pub fn opening_request(question: &str) -> OpeningRequest {
 }
 
 pub fn opening_batch(stances: [Stance; 3]) -> OpeningBatch {
+    let outcomes: Vec<_> = PersonaId::ALL
+        .into_iter()
+        .zip(stances)
+        .map(|(persona, stance)| OpeningOutcome::Ok {
+            opening: Opening {
+                persona,
+                stance,
+                confidence: 70,
+                summary: "summary".into(),
+                key_points: vec!["point".into()],
+                risks: vec!["risk".into()],
+                model: "fake".into(),
+            },
+        })
+        .collect();
+    let decision = decide_openings(&outcomes);
+
     OpeningBatch {
-        outcomes: PersonaId::ALL
-            .into_iter()
-            .zip(stances)
-            .map(|(persona, stance)| OpeningOutcome::Ok {
-                opening: Opening {
-                    persona,
-                    stance,
-                    confidence: 70,
-                    summary: "summary".into(),
-                    key_points: vec!["point".into()],
-                    risks: vec!["risk".into()],
-                    model: "fake".into(),
-                },
-            })
-            .collect(),
+        outcomes,
         prompt_version: OpeningBatch::PROMPT_VERSION.into(),
+        decision,
     }
 }
 
@@ -206,6 +210,7 @@ pub fn batch_with_failed_opening(failed: PersonaId) -> OpeningBatch {
         persona: failed,
         message: "opening failed".into(),
     };
+    batch.decision = decide_openings(&batch.outcomes);
     batch
 }
 

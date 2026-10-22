@@ -7,28 +7,34 @@
   --font-mono:
     'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas,
     'PingFang SC', 'Microsoft YaHei', monospace;
+  --font-display: 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', sans-serif;
 
-  /* MAGI console palette. Intentionally dark in both system themes. */
-  --color-term-bg: #050504;
-  --color-term-panel: #0b0906;
-  --color-term-fg: #f2e6c9;
-  --color-term-dim: #8b7a5a;
-  --color-term-amber: #ffb000;
+  /* MAGI console palette, adapted from the classic orange/black terminal. */
+  --color-term-bg: #000000;
+  --color-term-panel: #000000;
+  --color-term-fg: #f0e6d2;
+  --color-term-dim: #a08a62;
+  --color-term-amber: #ff8d00;
   --color-term-orange: #ff6a00;
-  --color-term-red: #ff3b30;
-  --color-term-green: #9bcf74;
-  --color-term-grid: #2a2115;
+  --color-term-red: #ff4d4d;
+  --color-term-green: #52e691;
+  --color-term-blue: #3caee0;
+  --color-term-grid: #3a2a10;
+  --color-term-input: #1f1203;
+  --color-term-stripe: #140b02;
+  --color-magi-red: #a41413;
+  --color-magi-gray: #8a8a8a;
 
-  /* Semantic tokens used by the settings modal. */
-  --color-bg: #050504;
-  --color-bg-raised: #0b0906;
-  --color-bg-hover: #15110a;
-  --color-border: #2a2115;
-  --color-fg: #f2e6c9;
-  --color-fg-dim: #8b7a5a;
-  --color-accent: #ffb000;
-  --color-danger: #ff3b30;
-  --color-ok: #9bcf74;
+  /* Semantic tokens used by the settings and history modals. */
+  --color-bg: #000000;
+  --color-bg-raised: #050300;
+  --color-bg-hover: #1f1203;
+  --color-border: #3a2a10;
+  --color-fg: #f0e6d2;
+  --color-fg-dim: #a08a62;
+  --color-accent: #ff8d00;
+  --color-danger: #ff4d4d;
+  --color-ok: #52e691;
 }
 
 @layer base {
@@ -45,11 +51,17 @@
   body {
     margin: 0;
     overflow: hidden;
-    background: var(--color-term-bg);
+    background: repeating-linear-gradient(
+      45deg,
+      #000000 0px,
+      #000000 20px,
+      var(--color-term-stripe) 20px,
+      var(--color-term-stripe) 40px
+    );
     color: var(--color-term-fg);
     font-family: var(--font-mono);
     font-size: 13px;
-    line-height: 1.6;
+    line-height: 1.5;
   }
 
   * {
@@ -68,25 +80,325 @@
   }
 
   ::selection {
-    background: rgba(255, 176, 0, 0.35);
+    background: rgba(255, 141, 0, 0.35);
   }
 }
 
-/* Subtle CRT scanlines. Decorative only. */
-.magi-scanlines {
-  background-image: repeating-linear-gradient(
-    0deg,
-    rgba(255, 255, 255, 0.05) 0,
-    rgba(255, 255, 255, 0.05) 1px,
-    transparent 1px,
-    transparent 3px
-  );
-  opacity: 0.28;
+/* ---------------------------------------------------------------------------
+ * MAGI geometric console
+ * Layout adapted from the classic MAGI decision-console geometry.
+ * ------------------------------------------------------------------------- */
+
+.magi-stage {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 12px 0;
+}
+
+.magi-panel-wrap {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  justify-content: center;
+}
+
+.magi-panel {
+  position: relative;
+  display: grid;
+  width: 100%;
+  max-width: 1200px;
+  height: 100%;
+  border: 2px solid var(--color-term-amber);
+  background: #000000;
+  container-type: size;
+
+  grid-template-columns:
+    [left-header-start] 20px
+    [casper-start status] 2fr
+    [left-header-end balthasar-start casper-balthasar-connection] 0.5fr
+    [casper-end title casper-melchior-connection] 1fr
+    [balthasar-melchior-connection melchior-start] 0.5fr
+    [right-header-start balthasar-end response] 2fr
+    [melchior-end] 20px
+    [right-header-end];
+
+  grid-template-rows:
+    20px
+    [header balthasar-start] 2fr
+    [status response] 2fr
+    [casper-start melchior-start casper-balthasar-connection balthasar-melchior-connection] 1fr
+    [balthasar-end title casper-melchior-connection] 3fr
+    [casper-end melchior-end] 20px;
+}
+
+.magi-title {
+  grid-area: title / title;
+  align-self: center;
+  color: var(--color-term-amber);
+  font-family: var(--font-display);
+  font-size: 7cqh;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-align: center;
+  line-height: 1;
+  padding: 0 4px;
+  background: #000000;
+}
+
+.magi-header {
+  overflow: hidden;
+  padding: 2px 0;
+}
+
+.magi-header.left {
+  grid-area: header / left-header-start / auto / left-header-end;
+}
+
+.magi-header.right {
+  grid-area: header / right-header-start / auto / right-header-end;
+}
+
+.magi-header > hr {
+  height: 4px;
+  margin: 2px;
+  border: 2px solid #277547;
+}
+
+.magi-header > span {
+  display: flex;
+  justify-content: center;
+  color: var(--color-term-amber);
+  font-family: var(--font-display);
+  font-size: 10cqh;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  transform: scaleX(2);
+}
+
+.magi-status {
+  grid-area: status;
+  align-self: start;
+  overflow: hidden;
+  padding-top: 1.2cqh;
+  color: var(--color-term-amber);
+  font-family: var(--font-mono);
+}
+
+.magi-status > div {
+  margin-left: 4cqw;
+  font-size: 2.5cqh;
+  line-height: 1.2;
+  white-space: nowrap;
+  transform: scaleX(1.2);
+  transform-origin: left;
+}
+
+.magi-status > div:first-child {
+  margin-left: 0;
+  font-size: 5.2cqh;
+  font-weight: 700;
+  transform: none;
+}
+
+.magi-response {
+  display: flex;
+  grid-area: response;
+  align-self: center;
+  justify-self: flex-end;
+  flex-direction: column;
+  align-items: center;
+  padding: 2px;
+  border: 2px solid currentColor;
+}
+
+.magi-response-inner {
+  padding: 2px 10px;
+  border: 2px solid currentColor;
+  font-family: var(--font-display);
+  font-size: 8cqh;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.magi-response-sub {
+  margin-top: 2px;
+  font-family: var(--font-mono);
+  font-size: 1.7cqh;
+  letter-spacing: 0.14em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.magi-unit {
+  display: flex;
+  padding: 2px;
+  border: 0;
+  background: var(--color-term-amber);
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+}
+
+.magi-unit.melchior {
+  grid-area: melchior-start / melchior-start / melchior-end / melchior-end;
+}
+
+.magi-unit.balthasar {
+  grid-area: balthasar-start / balthasar-start / balthasar-end / balthasar-end;
+}
+
+.magi-unit.casper {
+  grid-area: casper-start / casper-start / casper-end / casper-end;
+}
+
+.magi-unit.melchior,
+.magi-unit.melchior > .magi-unit-inner {
+  clip-path: polygon(35% 0, 100% 0, 100% 100%, 0 100%, 0 44%);
+}
+
+.magi-unit.balthasar,
+.magi-unit.balthasar > .magi-unit-inner {
+  clip-path: polygon(0 0, 100% 0, 100% 80%, 75% 100%, 25% 100%, 0 80%);
+}
+
+.magi-unit.casper,
+.magi-unit.casper > .magi-unit-inner {
+  clip-path: polygon(0 0, 65% 0, 100% 44%, 100% 100%, 0 100%);
+}
+
+.magi-unit-inner {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5cqh;
+  font-family: var(--font-display);
+  font-size: 5.5cqh;
+  font-weight: 700;
+  line-height: 1.05;
+  white-space: nowrap;
+}
+
+.magi-unit:hover > .magi-unit-inner {
+  filter: brightness(1.08);
+}
+
+.magi-unit:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: -4px;
+}
+
+.magi-unit-status {
+  font-family: var(--font-mono);
+  font-size: 1.9cqh;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  opacity: 0.82;
+}
+
+.magi-connection {
+  height: 10px;
+  margin: -10%;
+  align-self: center;
+  background: var(--color-term-amber);
+}
+
+.magi-connection.casper-balthasar {
+  grid-area: casper-balthasar-connection;
+  transform: rotate(-54deg);
+}
+
+.magi-connection.casper-melchior {
+  grid-area: casper-melchior-connection;
+}
+
+.magi-connection.balthasar-melchior {
+  grid-area: balthasar-melchior-connection;
+  transform: rotate(54deg);
+}
+
+@keyframes magi-flicker {
+  0% {
+  }
+
+  50% {
+    background: #000000;
+    color: #000000;
+    border-color: #000000;
+  }
+}
+
+.magi-flicker {
+  animation: magi-flicker 0.25s infinite step-end;
+}
+
+@media (max-width: 900px) {
+  .magi-panel {
+    display: flex;
+    height: auto;
+    flex-direction: column;
+    gap: 4px;
+    padding: 6px;
+  }
+
+  .magi-unit,
+  .magi-connection,
+  .magi-header,
+  .magi-status,
+  .magi-title,
+  .magi-response {
+    grid-area: auto;
+  }
+
+  .magi-unit {
+    min-height: 64px;
+    clip-path: none !important;
+  }
+
+  .magi-unit > .magi-unit-inner {
+    clip-path: none !important;
+    font-size: 18px;
+  }
+
+  .magi-unit-status {
+    font-size: 10px;
+  }
+
+  .magi-connection,
+  .magi-header,
+  .magi-status {
+    display: none;
+  }
+
+  .magi-title {
+    font-size: 26px;
+  }
+
+  .magi-response {
+    align-self: center;
+    margin: 8px 0;
+  }
+
+  .magi-response-inner {
+    font-size: 26px;
+  }
+
+  .magi-response-sub {
+    font-size: 9px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .magi-scanlines {
-    display: none;
+  .magi-flicker {
+    animation: none;
   }
 
   *,

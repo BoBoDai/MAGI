@@ -7,6 +7,7 @@
 //! transport and storage layers cannot drift from the decision policy.
 
 pub mod debate;
+pub mod decision;
 pub mod error;
 pub mod opening;
 pub mod persona;
@@ -16,6 +17,7 @@ pub mod verdict;
 pub mod vote;
 
 pub use debate::{DebateBatch, DebateCall, DebateOutcome, DebateReply, DebateRequest};
+pub use decision::{DecisionStatus, decide_openings};
 pub use error::{Error, Result};
 pub use opening::{Opening, OpeningBatch, OpeningCall, OpeningOutcome, OpeningRequest};
 pub use persona::PersonaId;

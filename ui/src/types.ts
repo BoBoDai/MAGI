@@ -61,10 +61,14 @@ export type OpeningOutcome =
   | { status: 'ok'; opening: Opening }
   | { status: 'failed'; persona: PersonaId; message: string };
 
+/** 对应 `magi_core::DecisionStatus` */
+export type DecisionStatus = 'info' | 'yes' | 'no' | 'conditional' | 'error';
+
 /** 对应 `magi_core::OpeningBatch` */
 export interface OpeningBatch {
   outcomes: OpeningOutcome[];
   prompt_version: string;
+  decision: DecisionStatus;
 }
 
 export interface OpeningRequest {

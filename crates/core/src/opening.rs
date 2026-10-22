@@ -2,6 +2,7 @@
 
 use serde::{Deserialize, Serialize};
 
+use crate::decision::DecisionStatus;
 use crate::persona::PersonaId;
 use crate::stage::Stance;
 
@@ -46,6 +47,10 @@ impl OpeningOutcome {
 pub struct OpeningBatch {
     pub outcomes: Vec<OpeningOutcome>,
     pub prompt_version: String,
+    /// Derived from the outcomes. Stored so the console does not reimplement
+    /// the decision policy; old records without it default to `Info`.
+    #[serde(default)]
+    pub decision: DecisionStatus,
 }
 
 impl OpeningBatch {

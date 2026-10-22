@@ -4,12 +4,35 @@ export const PERSONAS: PersonaId[] = ['melchior', 'balthasar', 'casper'];
 
 export const PERSONA_META: Record<
   PersonaId,
-  { unit: string; label: string; lens: string }
+  { unit: string; short: string; number: number; label: string; lens: string }
 > = {
-  melchior: { unit: 'MELCHIOR-1', label: '科学家', lens: '证据 · 方法 · 风险' },
-  balthasar: { unit: 'BALTHASAR-2', label: '母亲', lens: '保护 · 长期 · 可逆' },
-  casper: { unit: 'CASPER-3', label: '女性', lens: '人 · 关系 · 直觉' },
+  melchior: {
+    unit: 'MELCHIOR-1',
+    short: 'MELCHIOR',
+    number: 1,
+    label: '科学家',
+    lens: '证据 · 方法 · 风险',
+  },
+  balthasar: {
+    unit: 'BALTHASAR-2',
+    short: 'BALTHASAR',
+    number: 2,
+    label: '母亲',
+    lens: '保护 · 长期 · 可逆',
+  },
+  casper: {
+    unit: 'CASPER-3',
+    short: 'CASPER',
+    number: 3,
+    label: '女性',
+    lens: '人 · 关系 · 直觉',
+  },
 };
+
+export function unitName(persona: PersonaId): string {
+  const meta = PERSONA_META[persona];
+  return `${meta.short} • ${meta.number}`;
+}
 
 export const STANCE_LABEL: Record<Stance, string> = {
   approve: 'APPROVE',
@@ -20,19 +43,19 @@ export const STANCE_LABEL: Record<Stance, string> = {
 export const STANCE_TEXT: Record<Stance, string> = {
   approve: 'text-term-green',
   reject: 'text-term-red',
-  abstain: 'text-term-dim',
+  abstain: 'text-term-blue',
 };
 
 export const STANCE_BORDER: Record<Stance, string> = {
   approve: 'border-term-green',
   reject: 'border-term-red',
-  abstain: 'border-term-dim',
+  abstain: 'border-term-blue',
 };
 
 export const STANCE_LED: Record<Stance, string> = {
   approve: 'bg-term-green',
   reject: 'bg-term-red',
-  abstain: 'bg-term-dim',
+  abstain: 'bg-term-blue',
 };
 
 export function verdictTitle(verdict: MagiVerdict): string {

@@ -35,6 +35,7 @@ fn openings() -> OpeningBatch {
             })
             .collect(),
         prompt_version: OpeningBatch::PROMPT_VERSION.into(),
+        decision: magi_core::DecisionStatus::Yes,
     }
 }
 

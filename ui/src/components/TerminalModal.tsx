@@ -31,7 +31,7 @@ export default function TerminalModal({
       role="presentation"
     >
       <div
-        className={`flex max-h-[86vh] w-full flex-col border border-term-grid bg-term-panel font-mono text-term-fg ${
+        className={`flex max-h-[86vh] w-full flex-col border-2 border-term-amber bg-black font-mono text-term-fg ${
           wide ? 'max-w-5xl' : 'max-w-2xl'
         }`}
         role="dialog"
@@ -39,7 +39,7 @@ export default function TerminalModal({
         aria-label={title}
         onMouseDown={(event) => event.stopPropagation()}
       >
-        <header className="flex items-start gap-3 border-b border-term-grid px-4 py-2.5">
+        <header className="flex items-start gap-3 border-b-2 border-term-amber px-4 py-2.5">
           <div className="min-w-0 flex-1">
             <h2 className="m-0 text-[10px] uppercase tracking-[0.26em] text-term-amber">
               {title}

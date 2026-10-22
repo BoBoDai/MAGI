@@ -7,6 +7,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::debate::DebateBatch;
+use crate::decision::decide_openings;
 use crate::error::{Error, Result};
 use crate::opening::{OpeningBatch, OpeningOutcome};
 use crate::persona::PersonaId;
@@ -157,6 +158,10 @@ impl SessionDraft {
     /// Validate the draft and recompute every derived field.
     pub fn recompute(&mut self) -> Result<()> {
         self.validate()?;
+
+        if let Some(openings) = self.openings.as_mut() {
+            openings.decision = decide_openings(&openings.outcomes);
+        }
 
         let Some(vote) = self.vote.as_mut() else {
             return Ok(());
@@ -347,15 +352,19 @@ mod tests {
     }
 
     fn openings(stances: [Stance; 3]) -> OpeningBatch {
+        let outcomes: Vec<_> = PersonaId::ALL
+            .into_iter()
+            .zip(stances)
+            .map(|(persona, stance)| OpeningOutcome::Ok {
+                opening: opening(persona, stance),
+            })
+            .collect();
+        let decision = crate::decision::decide_openings(&outcomes);
+
         OpeningBatch {
-            outcomes: PersonaId::ALL
-                .into_iter()
-                .zip(stances)
-                .map(|(persona, stance)| OpeningOutcome::Ok {
-                    opening: opening(persona, stance),
-                })
-                .collect(),
+            outcomes,
             prompt_version: OpeningBatch::PROMPT_VERSION.into(),
+            decision,
         }
     }
 
