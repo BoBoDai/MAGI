@@ -1,0 +1,99 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  --font-mono:
+    'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas,
+    'PingFang SC', 'Microsoft YaHei', monospace;
+
+  /* MAGI console palette. Intentionally dark in both system themes. */
+  --color-term-bg: #050504;
+  --color-term-panel: #0b0906;
+  --color-term-fg: #f2e6c9;
+  --color-term-dim: #8b7a5a;
+  --color-term-amber: #ffb000;
+  --color-term-orange: #ff6a00;
+  --color-term-red: #ff3b30;
+  --color-term-green: #9bcf74;
+  --color-term-grid: #2a2115;
+
+  /* Semantic tokens used by the settings modal. */
+  --color-bg: #050504;
+  --color-bg-raised: #0b0906;
+  --color-bg-hover: #15110a;
+  --color-border: #2a2115;
+  --color-fg: #f2e6c9;
+  --color-fg-dim: #8b7a5a;
+  --color-accent: #ffb000;
+  --color-danger: #ff3b30;
+  --color-ok: #9bcf74;
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: var(--color-term-bg);
+    color: var(--color-term-fg);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+
+  button:not(:disabled) {
+    cursor: pointer;
+  }
+
+  ::selection {
+    background: rgba(255, 176, 0, 0.35);
+  }
+}
+
+/* Subtle CRT scanlines. Decorative only. */
+.magi-scanlines {
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.05) 0,
+    rgba(255, 255, 255, 0.05) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  opacity: 0.28;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .magi-scanlines {
+    display: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

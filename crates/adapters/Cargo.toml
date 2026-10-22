@@ -1,0 +1,17 @@
+[package]
+name = "magi-adapters"
+description = "MAGI LLM transport, prompts, and response parsing"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+magi-core = { workspace = true }
+
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
+reqwest = { workspace = true }
+futures-util = { workspace = true }
+tracing = { workspace = true }

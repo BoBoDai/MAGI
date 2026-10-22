@@ -1,0 +1,16 @@
+{
+  "name": "magi",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "pnpm -F @magi/ui dev",
+    "build": "pnpm -F @magi/ui build",
+    "typecheck": "pnpm -F @magi/ui typecheck",
+    "tauri": "tauri",
+    "app:dev": "tauri dev",
+    "app:build": "tauri build"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "2.12.3"
+  }
+}

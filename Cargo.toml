@@ -1,0 +1,35 @@
+[workspace]
+resolver = "3"
+members = ["crates/core", "crates/adapters", "crates/usecases", "src-tauri"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+authors = ["Junbo Dai"]
+
+[workspace.dependencies]
+magi-core = { path = "crates/core" }
+magi-adapters = { path = "crates/adapters" }
+magi-usecases = { path = "crates/usecases" }
+
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
+reqwest = { version = "0.13", features = ["json", "stream", "gzip", "brotli", "deflate", "zstd"] }
+futures-util = "0.3"
+thiserror = "2"
+chrono = { version = "0.4", features = ["serde"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Compile dependencies with optimizations while keeping our own code fast to build.
+[profile.dev.package."*"]
+opt-level = 2
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true

@@ -1,0 +1,17 @@
+[package]
+name = "magi-usecases"
+description = "MAGI transport-free protocol orchestration"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+magi-core = { workspace = true }
+magi-adapters = { workspace = true }
+
+tokio = { workspace = true }
+tracing = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true }
